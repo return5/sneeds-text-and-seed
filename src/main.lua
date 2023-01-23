@@ -67,10 +67,10 @@ local function generateText(generator,keys,limit)
     local length = 0
     for i=1,limit,1 do
         local word4
-        if generator[word1][word2][word3] then
-            word4 = getWord4(word1,word2,word3,generator,rand)
-        else
+        if not generator[word1] or not generator[word1][word2] or not generator[word1][word2][word3] then
             word2,word3,word4 = getNewRandWords(generator,keys,rand)
+        else
+            word4 = getWord4(word1,word2,word3,generator,rand)
         end
         word1 = word2
         word2 = word3
@@ -137,7 +137,11 @@ end
 local function main()
     math.randomseed(os.time())
     if #arg > 1 then
-        local file <const>  = ReadFile:new(arg[1],"[%w%p-]+",false)
+        local file <const> = ReadFile:new(arg[1],"[%w%p-]+",false)
+        if #file < 4 then
+            io.stderr:write("input text is too short. needs a minimum of four words.\n")
+            os.exit(false,true)
+        end
         local generatorTbl,keys <const> = generateGeneratorTbl(file)
         local text <const> = generateText(generatorTbl,keys,arg[2])
         writeFile(text,arg[3])
