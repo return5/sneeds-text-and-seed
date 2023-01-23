@@ -32,7 +32,7 @@ local function getWord4(word1,word2,word3,tbl,rand)
     return tbl[word1][word2][word3][rand(#tbl[word1][word2][word3])]
 end
 
---when we dont have a match in the table for word1,word2,and word3 (tbl[word1][word2][word3] == nil)
+--when we don't have a match in the table for word1,word2,and word3 (tbl[word1][word2][word3] == nil)
 --we need to grab three new words to keep going with.
 local function getNewRandWords(tbl,keys,rand)
     local word1 <const> = keys[rand(#keys)]
@@ -52,18 +52,26 @@ local function newLineFunc(word3,textTbl,length,match)
     return length + 1
 end
 
---generate our new random text
-local function generateText(generator,keys,limit)
-    local rand <const> = math.random
-    local match <const> = string.match
-    local textTbl <const> = {}
-    local word1,word2,word3 = getNewRandWords(generator,keys,rand)
+--when we start generating random text when need to init the first three words.
+--here we grab a random word1, then using that grab the next two words.
+--we then fill in the first values inside of the text table.
+local function initWords(tbl,keys,textTbl,rand)
+    local word1,word2,word3 <const> = getNewRandWords(tbl,keys,rand)
     textTbl[1] = word1
     textTbl[2] = " "
     textTbl[3] = word2
     textTbl[4] = " "
     textTbl[5] = word3
     textTbl[6] = " "
+    return word1,word2,word3
+end
+
+--generate our new random text
+local function generateText(generator,keys,limit)
+    local rand <const> = math.random
+    local match <const> = string.match
+    local textTbl <const> = {}
+    local word1,word2,word3 = initWords(generator,keys,textTbl,rand)
     local length = 0
     for i=1,limit,1 do
         local word4
