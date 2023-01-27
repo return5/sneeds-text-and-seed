@@ -27,6 +27,7 @@ local function getWordFromTbl(tbl,key)
         return k
     end
 end
+
 --get a random word4 from the word4 array
 local function getWord4(word1,word2,word3,tbl,rand)
     return tbl[word1][word2][word3][rand(#tbl[word1][word2][word3])]
@@ -37,7 +38,7 @@ end
 local function getNewRandWords(tbl,keys,rand)
     local word1 <const> = keys[rand(#keys)]
     local word2 <const> = getWordFromTbl(tbl,word1)
-    local word3 = getWordFromTbl(tbl[word1],word2)
+    local word3 <const> = getWordFromTbl(tbl[word1],word2)
     return word2,word3,getWord4(word1,word2,word3,tbl,rand)
 end
 
@@ -66,25 +67,35 @@ local function initWords(tbl,keys,textTbl,rand)
     return word1,word2,word3
 end
 
+local function generateTextLoopBody(word1,word2,word3,generator,rand,keys,textTbl,length,match)
+    local word4
+    if not generator[word1] or not generator[word1][word2] or not generator[word1][word2][word3] then
+        word2,word3,word4 = getNewRandWords(generator,keys,rand)
+    else
+        word4 = getWord4(word1,word2,word3,generator,rand)
+    end
+    word1 = word2
+    word2 = word3
+    word3 = word4
+    textTbl[#textTbl + 1] = word4
+    return word2,word3,word4,newLineFunc(word4,textTbl,length,match)
+end
+
 --generate our new random text
-local function generateText(generator,keys,limit)
+local function generateText(generator,keys,limit,finish)
     local rand <const> = math.random
     local match <const> = string.match
     local textTbl <const> = {}
     local word1,word2,word3 = initWords(generator,keys,textTbl,rand)
     local length = 0
     for i=1,limit,1 do
-        local word4
-        if not generator[word1] or not generator[word1][word2] or not generator[word1][word2][word3] then
-            word2,word3,word4 = getNewRandWords(generator,keys,rand)
-        else
-            word4 = getWord4(word1,word2,word3,generator,rand)
+        word1,word2,word3,length = generateTextLoopBody(word1,word2,word3,generator,rand,keys,textTbl,length,match)
+    end
+    if finish then
+        length = 1
+        while length > 0 do
+            word1,word2,word3,length = generateTextLoopBody(word1,word2,word3,generator,rand,keys,textTbl,length,match)
         end
-        word1 = word2
-        word2 = word3
-        word3 = word4
-        textTbl[#textTbl + 1] = word4
-        length = newLineFunc(word4,textTbl,length,match)
     end
     return table.concat(textTbl)
 end
@@ -151,8 +162,8 @@ local function main()
             os.exit(false,true)
         end
         local generatorTbl,keys <const> = generateGeneratorTbl(file)
-        local text <const> = generateText(generatorTbl,keys,arg[2])
-        writeFile(text,arg[3])
+        local text <const> = generateText(generatorTbl,keys,arg[2],arg[3])
+        writeFile(text,arg[4])
     else
         printUsage()
     end

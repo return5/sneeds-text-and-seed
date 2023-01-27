@@ -8,6 +8,8 @@ nothing smart nor sophisticated, you wont find any A.I.,bots,nor sophisticated a
       - the file containing the input text. should be a simple text file.
     - length
       - how many words to generate based on input. should be a positive integer value.
+    - finish sentence
+      - boolean to decide whether to keep generating random text after limit is hit until a complete sentence is formed. default is false.
     - output file
       - the file to write text to. if none is included then default to using stdout.
 
