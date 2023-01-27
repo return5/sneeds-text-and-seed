@@ -69,14 +69,13 @@ end
 
 local function generateTextLoopBody(word1,word2,word3,generator,rand,keys,textTbl,length,match)
     local word4
+    --if word1, word2,or word3 is a nil value in generator table then we grab a new set of word1,word2,word3,and word4
     if not generator[word1] or not generator[word1][word2] or not generator[word1][word2][word3] then
         word2,word3,word4 = getNewRandWords(generator,keys,rand)
     else
+        --grab word4 from generator table based on word1, word2, and word3.
         word4 = getWord4(word1,word2,word3,generator,rand)
     end
-    word1 = word2
-    word2 = word3
-    word3 = word4
     textTbl[#textTbl + 1] = word4
     return word2,word3,word4,newLineFunc(word4,textTbl,length,match)
 end
@@ -163,7 +162,8 @@ local function main()
             os.exit(false,true)
         end
         local generatorTbl,keys <const> = generateGeneratorTbl(file)
-        local text <const> = generateText(generatorTbl,keys,arg[2],arg[3])
+        local finish <const> = (arg[3] and string.lower(arg[3]) == "true") or false
+        local text <const> = generateText(generatorTbl,keys,arg[2],finish)
         writeFile(text,arg[4])
     else
         printUsage()
