@@ -146,10 +146,11 @@ local function writeFile(text,file)
 end
 
 local function printUsage()
-    io.write("sneed's text and seed [inputFile] [outputLength] [outputFile]\n")
+    io.write("sneed's text and seed [inputFile] [outputLength] [finishSentence] [outputFile]\n")
     io.write("generate random text based on input text.\n")
     io.write("\tinputFile - the input text to analyze. should be a simple text file.\n")
     io.write("\toutputLength - number of words to generate based on text. provide a positive integer value.\n")
+    io.write("\tfinishSentence - should program keep generating random text after limit is hit until sentence is finished. default is false\n")
     io.write("\toutputFile - the file to write generated text to. if none is provided then write to stdout.\n")
 end
 
